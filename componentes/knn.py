@@ -1,4 +1,4 @@
-from tools import dist, insert
+from componentes.tools import dist, insert
 
 def KNN_predict(alvo, matriz, labels, k = 3, size = 26):
     nn = []
