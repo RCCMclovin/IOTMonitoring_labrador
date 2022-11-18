@@ -1,4 +1,6 @@
 from numpy import array
+
+# Gerando matrizes de entrada e labels para o KNN
 def gerar_matriz(serie, w=4, s=0):
     mat = []
     l = serie[w:]

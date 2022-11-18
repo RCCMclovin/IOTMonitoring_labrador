@@ -1,6 +1,8 @@
+# Distância Euclidiana
 def dist(a, b):
     return (sum((a-b)**2))**0.5
 
+# Inserção em lista
 def insert(lista, valor):
     valor_nao_esta_na_lista = True
     for i in range(len(lista)):

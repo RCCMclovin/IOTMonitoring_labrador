@@ -1,5 +1,6 @@
 from componentes.tools import dist, insert
 
+#Execução do algoritmo KNN para prever a próxima entrada
 def KNN_predict(alvo, matriz, labels, k = 3, size = 26):
     nn = []
     for i in range(size):
