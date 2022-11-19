@@ -30,9 +30,10 @@ except:
     while n_entradas<max_entradas:
         line = serialPort.readline().decode().strip()
         if '*' in line:
+            print(line)
             dado = float(line.split("*")[1])
             print("Nova Leitura:", dado)
-            MQTT.send(f"Nova Leitura: {dado}")
+            conexao.publish(msg=f"Nova Leitura: {dado}")
             entradas.append(dado)
             n_entradas+=1
     create_csv(entradas)
@@ -44,6 +45,7 @@ atualizar = 0
 while True:
     line = serialPort.readline().decode().strip()
     if '*' in line:
+        print(line)
         dado = float(line.split("*")[1])
         print("Nova Leitura:", dado)
         margem_de_erro = margem()
@@ -53,11 +55,11 @@ while True:
         if dado >= predicao-margem_de_erro and dado <= predicao+margem_de_erro:
             print("Leitura dentro do intervalo.")
             update(dado)
-            MQTT.send(f"Nova Leitura: {dado}")
+            conexao.publish(msg=f"Nova Leitura: {dado}")
             atualizar = 1
         else:
             print("Leitura fora do intervalo.")
-            MQTT.send(f"Nova Leitura Possivelmente Alterada: {dado}")
+            conexao.publish(msg=f"Nova Leitura Possivelmente Alterada: {dado}")
     
     if atualizar == n_atualizar:
         atualizar=0
