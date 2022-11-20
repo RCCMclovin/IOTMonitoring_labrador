@@ -13,6 +13,8 @@ k = 3
 conexao = MQTT()
 conexao.setup()
 
+intervalo = Intervalo()
+
 try:
     serialPort = serial.Serial(port = "COM5", baudrate=9600,
                            bytesize=8, timeout=1, stopbits=serial.STOPBITS_ONE)
@@ -22,7 +24,7 @@ except:
 try:
     serie = fopen()
     mat, l = gerar_matriz(serie, w=janela)
-    intervalo = Intervalo()
+    intervalo.update(l)
 except: 
     print("Sem dados para Iniciar o modelo.")
     print(f"Serão feitas {max_entradas} leituras para iniciar o modelo.")
@@ -41,7 +43,8 @@ except:
     print("Arquivo de entrada inicializado.")
     serie = fopen()
     mat, l = gerar_matriz(serie, w=janela)
-    intervalo = Intervalo()
+    intervalo.update(l)
+
 
 atualizar = 0
 while True:
@@ -50,7 +53,8 @@ while True:
         print(line)
         dado = float(line.split("*")[1])
         print("Nova Leitura:", dado)
-        margem_de_erro = intervalo.margem()
+        margem_de_erro = intervalo.get_margem()
+        print(margem_de_erro)
         last4 = serie[-4::]
         predicao = KNN_predict(last4, mat, l, k=k, size=len(l))
         print(f"Intervalo de predição: [{predicao-margem_de_erro},{predicao+margem_de_erro}]")
