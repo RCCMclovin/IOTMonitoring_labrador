@@ -1,7 +1,6 @@
 //Includes para a utilização da RadioHead
 #include <SPI.h>
 #include <RH_RF95.h>
-
 #include <Thermistor.h> 
 
 //Criação de variáveis globais
@@ -10,9 +9,9 @@ int sf = 7;                           //Valores do Spreading Factor{7, 8, 9, 10,
 int cr = 5;                           //Valores do Coding Rate {5, 6, 7, 8}
 int contador = 0;                     //Contador do número da mensagem atual
 char id[] = {'0', '1', '2', '3', '4'};//Identificador do número da mensagem atual
-int espera = 5000;                    //Tempo de espera entre coletas em ms
+int waitTime = 5000;                    //thermistoro de waitTime entre coletas em ms
 uint8_t msg[7];                       //Base da mensagem a ser enviada
-Thermistor temp(2);                   //Temp, variável que representa o sensor de temperatura na porta 2
+Thermistor thermistor(2);                   //Temp, variável que representa o sensor de temperatura na porta 2
 float temperature;    
 
 void setup() {
@@ -42,31 +41,16 @@ void setup() {
 void loop() {
   
     //***** MEDIÇÕES ****/////
-  temperature = medeTemp();
+  getMeasurements();
 
   //Preparação da MSG
-  //Serial.println(temperature);
-  char sz[5], pckt[7];
-  dtostrf(temperature,5,2,sz);
-  pckt[0] = id[contador];
-  pckt[1] = '*';
-  for(int i = 0; i < 5; i++){
-    pckt[2+i] = sz[i];
-  }
-  memcpy(msg, &pckt, sizeof(pckt)); //Transforma o char para uint8_t
-  Serial.println("Mensagem preparada!");
+  setMessage();
 
   //Envio da mensagem
   sendMessage();
-  for(int i = 0; i < 7; i++){
-    Serial.print( (char) msg[i]);
-  }
-  Serial.println();
   
   //intervalo entre mensagens
-  delay(espera);
-  if(contador == 4) contador = 0;
-  else contador ++;
+  iterator();
 }
 
 //Funcao responsavel pelo envio e captura de mensagens
@@ -81,10 +65,26 @@ void sendMessage(){
   }
 }
 
-float medeTemp(){
-  if(contador < 4){
-    return temp.PegaValorTemp(); //Temperature, recebe o valor medido no sensor temp
+void getMeasurements(){
+  if(contador < 4) temperature =  thermistor.PegaValorTemp(); //Temperature, recebe o valor medido no sensor temp
+  else temperature =  -10.0;
+}
+
+void setMessage(){
+  char sz[5], pckt[7];
+  dtostrf(temperature,5,2,sz);
+  pckt[0] = id[contador];
+  pckt[1] = '*';
+  for(int i = 0; i < 5; i++){
+    pckt[2+i] = sz[i];
   }
-  return -10.0;
+  memcpy(msg, &pckt, sizeof(pckt)); //Transforma o char para uint8_t
+  Serial.println("Mensagem preparada!");
+}
+
+void iterator(){
+  delay(waitTime); //intervalo entre as mensagens
+  if(contador == 4) contador = 0;
+  else contador ++;
 }
   

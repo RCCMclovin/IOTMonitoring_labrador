@@ -6,7 +6,7 @@
 RH_RF95 rf95;                         //Instancia do modulo de transmissao
 int sf = 7;                           //Valores do Spreading Factor {7, 8, 9, 10, 11, 12}
 int cr = 5;                           //Valores do Coding Rate {5, 6, 7, 8}
-char id_anterior = '-';                     //Identificador da mensagem anterior
+char id_anterior = '-';               //Identificador da mensagem anterior
 
 void setup() {
   //Inicializa a serial do Arduino
@@ -33,9 +33,7 @@ void setup() {
 }
 
 void loop() {
-  while(true){
-    receiveMessage();
-  }
+  receiveMessage();
 }
 
 void receiveMessage(){
