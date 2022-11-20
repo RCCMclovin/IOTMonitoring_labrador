@@ -54,7 +54,6 @@ while True:
         dado = float(line.split("*")[1])
         print("Nova Leitura:", dado)
         margem_de_erro = intervalo.get_margem()
-        print(margem_de_erro)
         last4 = serie[-4::]
         predicao = KNN_predict(last4, mat, l, k=k, size=len(l))
         print(f"Intervalo de predição: [{predicao-margem_de_erro},{predicao+margem_de_erro}]")
