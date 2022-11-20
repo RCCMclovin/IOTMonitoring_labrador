@@ -1,7 +1,7 @@
 from componentes.file import *
 from componentes.preprocess import *
 from componentes.knn import *
-from componentes.intervalo import *
+from componentes.intervalo import Intervalo
 from componentes.mqtt import MQTT
 import serial
 
@@ -22,6 +22,7 @@ except:
 try:
     serie = fopen()
     mat, l = gerar_matriz(serie, w=janela)
+    intervalo = Intervalo()
 except: 
     print("Sem dados para Iniciar o modelo.")
     print(f"Serão feitas {max_entradas} leituras para iniciar o modelo.")
@@ -40,6 +41,7 @@ except:
     print("Arquivo de entrada inicializado.")
     serie = fopen()
     mat, l = gerar_matriz(serie, w=janela)
+    intervalo = Intervalo()
 
 atualizar = 0
 while True:
@@ -48,9 +50,9 @@ while True:
         print(line)
         dado = float(line.split("*")[1])
         print("Nova Leitura:", dado)
-        margem_de_erro = margem()
+        margem_de_erro = intervalo.margem()
         last4 = serie[-4::]
-        predicao = KNN_predict(last4, mat, l, k=k, size=len(mat))
+        predicao = KNN_predict(last4, mat, l, k=k, size=len(l))
         print(f"Intervalo de predição: [{predicao-margem_de_erro},{predicao+margem_de_erro}]")
         if dado >= predicao-margem_de_erro and dado <= predicao+margem_de_erro:
             print("Leitura dentro do intervalo.")
@@ -62,9 +64,11 @@ while True:
             conexao.publish(msg=f"Nova Leitura Possivelmente Alterada: {dado}")
     
     if atualizar == n_atualizar:
+        print("Atualizando bancos de dados")
         atualizar=0
         serie = fopen()
         mat, l = gerar_matriz(serie, w=janela)
+        intervalo.update(l)
 
 
 
