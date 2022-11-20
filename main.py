@@ -1,5 +1,4 @@
 from componentes.file import *
-from componentes.preprocess import *
 from componentes.knn import *
 from componentes.intervalo import Intervalo
 from componentes.mqtt import MQTT
