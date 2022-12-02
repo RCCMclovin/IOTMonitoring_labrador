@@ -64,7 +64,8 @@ except:
 
 #Variáveis de controle
 atualizar = 0
-ultima_janela = serie_temp[-1*janela::]
+ultima_janela_temp = serie_temp[-1*janela::]
+ultima_janela_turb = serie_turb[-1*janela::]
 
 #Loop de execução
 while True:
@@ -75,28 +76,28 @@ while True:
         turb = float(line.split("*")[2])
         print("Nova Leitura de Temperatura:", temp)
         IP = intervalo_temp.get_margem()                                          #Definir Intervalo de Predição
-        predicao = KNN_predict(ultima_janela, mat_temp, l_temp, k=k, size=len(l_turb))      #Predição
+        predicao = KNN_predict(ultima_janela_temp, mat_temp, l_temp, k=k, size=len(l_turb))      #Predição
         print(f"Intervalo de predição de Temperatura: [{predicao-IP},{predicao+IP}]")
         if temp >= predicao-IP and temp <= predicao+IP:
             print("Leitura de Temperatura dentro do intervalo.")
             update(temp, path="./SH_temperaturas", len_max=max_entradas)
             conexao.publish(msg=f"Nova Leitura de Temperatura: {temp}")                    #Publicar dado
             atualizar += 1
-            ultima_janela = ultima_janela[1::]+[temp]
+            ultima_janela_temp = ultima_janela_temp[1::]+[temp]
         else:
             print("Leitura de Temperatura fora do intervalo.")
             conexao.publish(msg=f"Nova Leitura de Temperatura Possivelmente Alterada: {temp}") #Publicar dado possivelmente alterado
         
         print("Nova Leitura de Turbidez:", turb)
         IP = intervalo_turb.get_margem()                                          #Definir Intervalo de Predição
-        predicao = KNN_predict(ultima_janela, mat_turb, l_turb, k=k, size=len(l_turb))      #Predição
+        predicao = KNN_predict(ultima_janela_turb, mat_turb, l_turb, k=k, size=len(l_turb))      #Predição
         print(f"Intervalo de predição de Turbidez: [{predicao-IP},{predicao+IP}]")
         if turb >= predicao-IP and turb <= predicao+IP:
             print("Leitura de Turbidez dentro do intervalo.")
             update(turb, path="./SH_turbidez", len_max=max_entradas)
             conexao.publish(msg=f"Nova Leitura de Turbidez: {turb}")                    #Publicar dado
             atualizar += 1
-            ultima_janela = ultima_janela[1::]+[turb]
+            ultima_janela_turb = ultima_janela_turb[1::]+[turb]
         else:
             print("Leitura de Turbidez fora do intervalo.")
             conexao.publish(msg=f"Nova Leitura de Turbidez Possivelmente Alterada: {turb}") #Publicar dado possivelmente alterado
