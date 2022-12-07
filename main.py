@@ -19,17 +19,17 @@ intervalo_turb = Intervalo()
 
 #Conexão com a porta serial
 try:
-    serialPort = serial.Serial(port = "COM5", baudrate=9600,
+    serialPort = serial.Serial(port = "/dev/ttyACM0", baudrate=9600,
                            bytesize=8, timeout=1, stopbits=serial.STOPBITS_ONE)
 except:
     raise Exception("Erro ao conectar ao Serial")
 
 #Leitura da séria histórica e inicialização dos parâmetros
 try:
-    serie_temp = fopen(path="./SH_temperaturas")
+    serie_temp = fopen(path="./SH_temperaturas.csv")
     mat_temp, l_temp = gerar_matriz(serie_temp, w=janela)
     intervalo_temp.update(l_temp)
-    serie_turb = fopen(path="./SH_turbidez")
+    serie_turb = fopen(path="./SH_turbidez.csv")
     mat_turb, l_turb = gerar_matriz(serie_turb, w=janela)
     intervalo_turb.update(l_turb)
 except: 
@@ -52,13 +52,13 @@ except:
             conexao.publish(msg=f"Nova Leitura de Turbidez: {turb}")
             entradas_turb.append(turb)
             n_entradas+=1
-    create_csv(entradas_temp, path="./SH_temperaturas")
-    create_csv(entradas_turb, path="./SH_turbidez")
+    create_csv(entradas_temp, path="./SH_temperaturas.csv")
+    create_csv(entradas_turb, path="./SH_turbidez.csv")
     print("Arquivo de entrada inicializado.")
-    serie_temp = fopen(path="./SH_temperaturas")
+    serie_temp = fopen(path="./SH_temperaturas.csv")
     mat_temp, l_temp = gerar_matriz(serie_temp, w=janela)
     intervalo_temp.update(l_temp)
-    serie_turb = fopen(path="./SH_turbidez")
+    serie_turb = fopen(path="./SH_turbidez.csv")
     mat_turb, l_turb = gerar_matriz(serie_turb, w=janela)
     intervalo_turb.update(l_turb)
 
@@ -80,7 +80,7 @@ while True:
         print(f"Intervalo de predição de Temperatura: [{predicao-IP},{predicao+IP}]")
         if temp >= predicao-IP and temp <= predicao+IP:
             print("Leitura de Temperatura dentro do intervalo.")
-            update(temp, path="./SH_temperaturas", len_max=max_entradas)
+            update(temp, path="./SH_temperaturas.csv", len_max=max_entradas)
             conexao.publish(msg=f"Nova Leitura de Temperatura: {temp}")                    #Publicar dado
             atualizar += 1
             ultima_janela_temp = ultima_janela_temp[1::]+[temp]
@@ -94,7 +94,7 @@ while True:
         print(f"Intervalo de predição de Turbidez: [{predicao-IP},{predicao+IP}]")
         if turb >= predicao-IP and turb <= predicao+IP:
             print("Leitura de Turbidez dentro do intervalo.")
-            update(turb, path="./SH_turbidez", len_max=max_entradas)
+            update(turb, path="./SH_turbidez.csv", len_max=max_entradas)
             conexao.publish(msg=f"Nova Leitura de Turbidez: {turb}")                    #Publicar dado
             atualizar += 1
             ultima_janela_turb = ultima_janela_turb[1::]+[turb]
@@ -105,10 +105,10 @@ while True:
     if atualizar == n_atualizar:                                            #Atualizando variáveis internas
         print("Atualizando bancos de dados")
         atualizar=0
-        serie_temp = fopen(path="./SH_temperaturas")
+        serie_temp = fopen(path="./SH_temperaturas.csv")
         mat_temp, l_temp = gerar_matriz(serie_temp, w=janela)
         intervalo_temp.update(l_temp)
-        serie_turb = fopen(path="./SH_turbidez")
+        serie_turb = fopen(path="./SH_turbidez.csv")
         mat_turb, l_turb = gerar_matriz(serie_turb, w=janela)
         intervalo_turb.update(l_turb)
 
